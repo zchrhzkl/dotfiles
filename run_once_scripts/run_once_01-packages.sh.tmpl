@@ -62,24 +62,15 @@ if ! command -v gh &>/dev/null; then
   sudo apt-get update -qq && sudo apt-get install -y gh
 fi
 
-# go
-if ! command -v go &>/dev/null; then
-  echo "==> Installing go..."
-  GOVER=$(curl -sL https://go.dev/VERSION?m=text | head -1)
-  curl -sL "https://go.dev/dl/${GOVER}.linux-amd64.tar.gz" -o /tmp/go.tar.gz
-  sudo rm -rf /usr/local/go
-  sudo tar -C /usr/local -xzf /tmp/go.tar.gz
-  rm /tmp/go.tar.gz
+# mise
+if ! command -v mise &>/dev/null; then
+  echo "==> Installing mise..."
+  curl https://mise.run | sh
 fi
-
-# nvm + node LTS
-if [ ! -d "$HOME/.nvm" ]; then
-  echo "==> Installing nvm..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-fi
-export NVM_DIR="$HOME/.nvm"
-\. "$NVM_DIR/nvm.sh"
-nvm install --lts
+export PATH="$HOME/.local/bin:$PATH"
+mise use --global go@latest
+mise use --global node@lts
+mise use --global terraform@latest
 
 # krew
 if ! kubectl krew version &>/dev/null 2>&1; then

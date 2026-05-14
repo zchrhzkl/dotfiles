@@ -6,21 +6,12 @@
 source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 antidote load
 
-# asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
-autoload -Uz compinit && compinit
+# mise
+eval "$(mise activate zsh)"
 
 # Kube Switch
 source <(switcher init zsh)
 source <(switch completion zsh)
-
-# NVM — lazy load for faster shell startup
-export NVM_DIR="$HOME/.nvm"
-nvm() { unset -f nvm node npm npx; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; nvm "$@" }
-node() { nvm >/dev/null && node "$@" }
-npm()  { nvm >/dev/null && npm  "$@" }
-npx()  { nvm >/dev/null && npx  "$@" }
 
 # Powerlevel10k instant prompt (keep near top)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -55,12 +46,8 @@ source $ZSH/oh-my-zsh.sh
 source <(switcher init zsh)
 source <(switch completion zsh)
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-export PATH=$PATH:/usr/local/go/bin
+# mise
+eval "$(mise activate zsh)"
 
 {{ end -}}
 # ── Shared ────────────────────────────────────────────────────────────────────
