@@ -7,11 +7,23 @@ echo "==> Installing packages via Brewfile..."
 brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile" --no-lock
 
 {{ else -}}
+# Detect architecture (amd64 or arm64)
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+
 echo "==> Installing apt packages..."
 sudo apt-get update -qq
 sudo apt-get install -y \
   git curl wget jq unzip fzf zsh bat \
-  kubectx make build-essential tmux
+  make build-essential tmux \
+  software-properties-common age
+
+# neovim (stable PPA — apt version is too outdated)
+if ! command -v nvim &>/dev/null; then
+  echo "==> Installing neovim..."
+  sudo add-apt-repository -y ppa:neovim-ppa/stable
+  sudo apt-get update -qq
+  sudo apt-get install -y neovim
+fi
 
 # bat on Ubuntu ships as batcat — symlink to bat
 if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then
@@ -23,7 +35,7 @@ fi
 if ! command -v kubectl &>/dev/null; then
   echo "==> Installing kubectl..."
   KUBECTL_VER=$(curl -sL https://dl.k8s.io/release/stable.txt)
-  curl -sLO "https://dl.k8s.io/release/${KUBECTL_VER}/bin/linux/amd64/kubectl"
+  curl -sLO "https://dl.k8s.io/release/${KUBECTL_VER}/bin/linux/${ARCH}/kubectl"
   sudo install -m 0755 kubectl /usr/local/bin/kubectl
   rm kubectl
 fi
@@ -38,7 +50,7 @@ fi
 if ! command -v switcher &>/dev/null; then
   echo "==> Installing kubeswitch..."
   KSVER=$(curl -s https://api.github.com/repos/danielfoehrKn/kubeswitch/releases/latest | jq -r .tag_name)
-  curl -sL "https://github.com/danielfoehrKn/kubeswitch/releases/download/${KSVER}/switcher_linux_amd64" -o /tmp/switcher
+  curl -sL "https://github.com/danielfoehrKn/kubeswitch/releases/download/${KSVER}/switcher_linux_${ARCH}" -o /tmp/switcher
   sudo install -m 0755 /tmp/switcher /usr/local/bin/switcher
   rm /tmp/switcher
 fi
@@ -47,7 +59,7 @@ fi
 if ! command -v argocd &>/dev/null; then
   echo "==> Installing argocd..."
   ACVER=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releases/latest | jq -r .tag_name)
-  curl -sL "https://github.com/argoproj/argo-cd/releases/download/${ACVER}/argocd-linux-amd64" -o /tmp/argocd
+  curl -sL "https://github.com/argoproj/argo-cd/releases/download/${ACVER}/argocd-linux-${ARCH}" -o /tmp/argocd
   sudo install -m 0755 /tmp/argocd /usr/local/bin/argocd
   rm /tmp/argocd
 fi
@@ -75,12 +87,10 @@ mise use --global terraform@latest
 # krew
 if ! kubectl krew version &>/dev/null 2>&1; then
   echo "==> Installing krew..."
-  KREW_OS=linux
-  KREW_ARCH=amd64
-  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-${KREW_OS}_${KREW_ARCH}.tar.gz"
-  tar zxvf "krew-${KREW_OS}_${KREW_ARCH}.tar.gz"
-  ./krew-linux_amd64 install krew
-  rm -f krew-linux_amd64 "krew-${KREW_OS}_${KREW_ARCH}.tar.gz"
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-linux_${ARCH}.tar.gz"
+  tar zxvf "krew-linux_${ARCH}.tar.gz"
+  "./krew-linux_${ARCH}" install krew
+  rm -f "./krew-linux_${ARCH}" "krew-linux_${ARCH}.tar.gz"
 fi
 
 # krew plugins

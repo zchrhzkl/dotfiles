@@ -37,17 +37,20 @@ export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 {{ else -}}
 # ── Linux ─────────────────────────────────────────────────────────────────────
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
 plugins=(git zsh-completions zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
+# mise
+eval "$(mise activate zsh)"
+
 # Kube Switch
 source <(switcher init zsh)
 source <(switch completion zsh)
-
-# mise
-eval "$(mise activate zsh)"
 
 {{ end -}}
 # ── Shared ────────────────────────────────────────────────────────────────────
@@ -67,6 +70,8 @@ alias vim="nvim"
 alias cat="bat --paging=never"
 alias awp='export AWS_PROFILE=$(aws configure list-profiles | fzf --prompt "Select AWS profile: ")'
 
-# PATH
+# macOS PATH extras
+{{ if eq .chezmoi.os "darwin" -}}
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+{{- end }}
