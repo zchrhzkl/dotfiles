@@ -32,9 +32,17 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:zchrhzkl/dot
 > sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/zchrhzkl/dotfiles.git
 > ```
 
-## One-time setup (on existing machine)
+## Work environment setup
 
-Encrypt your SSH key and upload it to OneDrive:
+After `chezmoi apply`, run the work setup script to configure git identity and SSH key:
+
+```sh
+bash ~/.local/share/chezmoi/scripts/setup-work.sh
+```
+
+It will prompt for your company name, work email, and SSH key filename, then optionally fetch and decrypt your SSH key from OneDrive.
+
+To encrypt and upload your SSH key to OneDrive (one-time):
 
 ```sh
 mkdir -p ~/OneDrive/dotfiles-secrets
@@ -60,7 +68,7 @@ age -p ~/.ssh/id_ed25519_company_name > ~/OneDrive/dotfiles-secrets/id_ed25519_c
 - `run_once_01`: installs packages (`brew bundle` on macOS, `apt` + manual on Linux)
 - `run_once_02`: installs oh-my-zsh + plugins (Linux only)
 - `run_once_03`: installs TPM + tmux plugins
-- `run_once_04`: fetches age-encrypted SSH key from OneDrive, decrypts, loads into agent
+- `run_once_04`: _(removed — use `scripts/setup-work.sh` instead)_
 
 > `run_once_` scripts execute **once ever** per machine (chezmoi tracks by content hash).  
 > They re-run only if the script content changes — all scripts are idempotent.
