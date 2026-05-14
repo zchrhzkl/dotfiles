@@ -1,0 +1,106 @@
+#!/bin/bash
+# Install core packages — runs once on first chezmoi apply
+set -e
+
+{{ if eq .chezmoi.os "darwin" -}}
+echo "==> Installing packages via Brewfile..."
+brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile" --no-lock
+
+{{ else -}}
+echo "==> Installing apt packages..."
+sudo apt-get update -qq
+sudo apt-get install -y \
+  git curl wget jq unzip fzf zsh bat \
+  kubectx make build-essential
+
+# bat on Ubuntu ships as batcat — symlink to bat
+if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then
+  mkdir -p "$HOME/.local/bin"
+  ln -sf "$(which batcat)" "$HOME/.local/bin/bat"
+fi
+
+# kubectl
+if ! command -v kubectl &>/dev/null; then
+  echo "==> Installing kubectl..."
+  KUBECTL_VER=$(curl -sL https://dl.k8s.io/release/stable.txt)
+  curl -sLO "https://dl.k8s.io/release/${KUBECTL_VER}/bin/linux/amd64/kubectl"
+  sudo install -m 0755 kubectl /usr/local/bin/kubectl
+  rm kubectl
+fi
+
+# helm
+if ! command -v helm &>/dev/null; then
+  echo "==> Installing helm..."
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+fi
+
+# kubeswitch (switcher binary)
+if ! command -v switcher &>/dev/null; then
+  echo "==> Installing kubeswitch..."
+  KSVER=$(curl -s https://api.github.com/repos/danielfoehrKn/kubeswitch/releases/latest | jq -r .tag_name)
+  curl -sL "https://github.com/danielfoehrKn/kubeswitch/releases/download/${KSVER}/switcher_linux_amd64" -o /tmp/switcher
+  sudo install -m 0755 /tmp/switcher /usr/local/bin/switcher
+  rm /tmp/switcher
+fi
+
+# argocd
+if ! command -v argocd &>/dev/null; then
+  echo "==> Installing argocd..."
+  ACVER=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releases/latest | jq -r .tag_name)
+  curl -sL "https://github.com/argoproj/argo-cd/releases/download/${ACVER}/argocd-linux-amd64" -o /tmp/argocd
+  sudo install -m 0755 /tmp/argocd /usr/local/bin/argocd
+  rm /tmp/argocd
+fi
+
+# gh (GitHub CLI)
+if ! command -v gh &>/dev/null; then
+  echo "==> Installing gh..."
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+    | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+  sudo apt-get update -qq && sudo apt-get install -y gh
+fi
+
+# go
+if ! command -v go &>/dev/null; then
+  echo "==> Installing go..."
+  GOVER=$(curl -sL https://go.dev/VERSION?m=text | head -1)
+  curl -sL "https://go.dev/dl/${GOVER}.linux-amd64.tar.gz" -o /tmp/go.tar.gz
+  sudo rm -rf /usr/local/go
+  sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+  rm /tmp/go.tar.gz
+fi
+
+# nvm + node LTS
+if [ ! -d "$HOME/.nvm" ]; then
+  echo "==> Installing nvm..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+fi
+export NVM_DIR="$HOME/.nvm"
+\. "$NVM_DIR/nvm.sh"
+nvm install --lts
+
+# krew
+if ! kubectl krew version &>/dev/null 2>&1; then
+  echo "==> Installing krew..."
+  KREW_OS=linux
+  KREW_ARCH=amd64
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-${KREW_OS}_${KREW_ARCH}.tar.gz"
+  tar zxvf "krew-${KREW_OS}_${KREW_ARCH}.tar.gz"
+  ./krew-linux_amd64 install krew
+  rm -f krew-linux_amd64 "krew-${KREW_OS}_${KREW_ARCH}.tar.gz"
+fi
+
+# krew plugins
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+kubectl krew install neat 2>/dev/null || true
+
+# rclone (for OneDrive access)
+if ! command -v rclone &>/dev/null; then
+  echo "==> Installing rclone..."
+  curl https://rclone.org/install.sh | sudo bash
+fi
+
+echo "==> Package installation complete."
+{{ end -}}

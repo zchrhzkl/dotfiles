@@ -1,0 +1,8 @@
+{{- $company   := promptStringOnce . "company"   "Work directory name (e.g. company_name)" -}}
+{{- $email     := promptStringOnce . "workEmail" "Work email" -}}
+{{- $sshKey    := promptStringOnce . "sshKey"    "SSH key filename (e.g. id_ed25519_company_name)" -}}
+
+[data]
+  company   = {{ $company | quote }}
+  workEmail = {{ $email | quote }}
+  sshKey    = {{ $sshKey | quote }}

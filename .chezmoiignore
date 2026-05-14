@@ -1,0 +1,8 @@
+# macOS-only files — ignored on Linux
+{{ if ne .chezmoi.os "darwin" }}
+.zsh_plugins.txt
+.p10k.zsh
+{{ end }}
+
+# nvim auto-generated lockfile
+.config/nvim/lazy-lock.json

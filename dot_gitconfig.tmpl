@@ -1,0 +1,11 @@
+[push]
+	autoSetupRemote = true
+{{ if eq .chezmoi.os "linux" -}}
+[user]
+	name  = Zachariah Ezekial
+	email = {{ .workEmail }}
+[core]
+	sshCommand = ssh -o IdentitiesOnly=yes -o IdentityAgent=none -i ~/.ssh/{{ .sshKey }}
+[includeIf "gitdir:~/{{ .company }}/"]
+	path = ~/.gitconfigs/work.gitconfig
+{{ end -}}
