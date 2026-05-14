@@ -9,8 +9,13 @@ Targets: **macOS** (primary) and **Linux / OrbStack VM** (secondary).
 ### macOS
 ```sh
 brew install chezmoi age
-chezmoi init --apply git@github.com:zachariahezekial/dotfiles
+chezmoi init --apply git@github.com:zchrhzkl/dotfiles
 ```
+
+> No SSH key? Use HTTPS instead:
+> ```sh
+> chezmoi init --apply https://github.com/zchrhzkl/dotfiles.git
+> ```
 
 ### Linux
 ```sh
@@ -19,8 +24,13 @@ curl https://rclone.org/install.sh | sudo bash
 rclone config   # create a remote named "onedrive" using Microsoft OneDrive
 
 # Bootstrap
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:zachariahezekial/dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:zchrhzkl/dotfiles
 ```
+
+> No SSH key? Use HTTPS instead:
+> ```sh
+> sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/zchrhzkl/dotfiles.git
+> ```
 
 ## One-time setup (on existing machine)
 
