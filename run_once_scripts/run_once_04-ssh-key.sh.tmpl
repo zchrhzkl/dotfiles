@@ -12,6 +12,17 @@ if [ -f "$KEY_FILE" ]; then
   exit 0
 fi
 
+# Ask user whether to set up SSH key
+echo ""
+read -r -p "==> Set up SSH key from OneDrive? [y/N] " answer
+case "$answer" in
+  [yY][eE][sS]|[yY]) ;;
+  *)
+    echo "==> Skipping SSH key setup. Run chezmoi apply again when ready."
+    exit 0
+    ;;
+esac
+
 mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 
@@ -27,7 +38,6 @@ cp "$ONEDRIVE/$ONEDRIVE_SECRETS/{{ .sshKey }}.age" "$ENCRYPTED"
 
 {{ else -}}
 # Linux: use rclone with OneDrive backend
-# Configure once with: rclone config (choose OneDrive, name it "onedrive")
 if ! command -v rclone &>/dev/null; then
   echo "ERROR: rclone not found. Run run_once_01-packages first."
   exit 1
