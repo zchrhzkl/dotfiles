@@ -13,10 +13,15 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-# Install plugins headlessly
+# Clone plugins directly from tmux.conf — avoids needing a live tmux server
 echo "==> Installing tmux plugins..."
-tmux start-server
-~/.tmux/plugins/tpm/bin/install_plugins
-tmux kill-server 2>/dev/null || true
+tmux_conf="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
+grep -E 'set -g @plugin' "$tmux_conf" | sed "s/.*'\(.*\)'/\1/" | while read -r plugin; do
+  dir="$HOME/.tmux/plugins/${plugin##*/}"
+  if [ ! -d "$dir" ]; then
+    echo "  Cloning $plugin..."
+    git clone --depth=1 "https://github.com/$plugin" "$dir"
+  fi
+done
 
 echo "==> tmux setup complete."
