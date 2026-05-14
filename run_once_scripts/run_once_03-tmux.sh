@@ -13,10 +13,10 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 fi
 
-# Install plugins headlessly via a detached tmux session
+# Install plugins headlessly
 echo "==> Installing tmux plugins..."
-tmux new-session -d -s tpm_install 2>/dev/null || true
+tmux start-server
 ~/.tmux/plugins/tpm/bin/install_plugins
-tmux kill-session -t tpm_install 2>/dev/null || true
+tmux kill-server 2>/dev/null || true
 
 echo "==> tmux setup complete."

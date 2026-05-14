@@ -11,7 +11,7 @@ echo "==> Installing apt packages..."
 sudo apt-get update -qq
 sudo apt-get install -y \
   git curl wget jq unzip fzf zsh bat \
-  kubectx make build-essential
+  kubectx make build-essential tmux
 
 # bat on Ubuntu ships as batcat — symlink to bat
 if command -v batcat &>/dev/null && ! command -v bat &>/dev/null; then
