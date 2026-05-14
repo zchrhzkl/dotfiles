@@ -14,15 +14,17 @@ echo "==> Installing apt packages..."
 sudo apt-get update -qq
 sudo apt-get install -y \
   git curl wget jq unzip fzf zsh bat \
-  make build-essential tmux \
-  software-properties-common age
+  make build-essential tmux age
 
-# neovim (stable PPA — apt version is too outdated)
+# neovim (GitHub release — PPA doesn't support all Ubuntu versions)
 if ! command -v nvim &>/dev/null; then
   echo "==> Installing neovim..."
-  sudo add-apt-repository -y ppa:neovim-ppa/stable
-  sudo apt-get update -qq
-  sudo apt-get install -y neovim
+  NVIM_ARCH="$ARCH"
+  [ "$ARCH" = "amd64" ] && NVIM_ARCH="x86_64"
+  NVIM_VER=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq -r .tag_name)
+  curl -sL "https://github.com/neovim/neovim/releases/download/${NVIM_VER}/nvim-linux-${NVIM_ARCH}.tar.gz" -o /tmp/nvim.tar.gz
+  sudo tar -C /usr/local --strip-components=1 -xzf /tmp/nvim.tar.gz
+  rm /tmp/nvim.tar.gz
 fi
 
 # bat on Ubuntu ships as batcat — symlink to bat
