@@ -14,7 +14,7 @@ fi
 
 # Ask user whether to set up SSH key
 echo ""
-read -r -p "==> Set up SSH key from OneDrive? [y/N] " answer
+read -r -p "==> Set up SSH key from OneDrive? [y/N] " answer </dev/tty
 case "$answer" in
   [yY][eE][sS]|[yY]) ;;
   *)
