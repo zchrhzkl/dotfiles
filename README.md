@@ -19,11 +19,6 @@ chezmoi init --apply git@github.com:zchrhzkl/dotfiles
 
 ### Linux
 ```sh
-# Install rclone and configure OneDrive remote first (one-time)
-curl https://rclone.org/install.sh | sudo bash
-rclone config   # create a remote named "onedrive" using Microsoft OneDrive
-
-# Bootstrap
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:zchrhzkl/dotfiles
 ```
 
@@ -32,31 +27,13 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:zchrhzkl/dot
 > sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/zchrhzkl/dotfiles.git
 > ```
 
-## Work environment setup
-
-After `chezmoi apply`, run the work setup script to configure git identity and SSH key:
-
-```sh
-bash "$(chezmoi source-path)/scripts/setup-work.sh"
-```
-
-It will prompt for your company name, work email, and SSH key filename, then optionally fetch and decrypt your SSH key from OneDrive.
-
-To encrypt and upload your SSH key to OneDrive (one-time):
-
-```sh
-mkdir -p ~/OneDrive/dotfiles-secrets
-age -p ~/.ssh/id_ed25519_company_name > ~/OneDrive/dotfiles-secrets/id_ed25519_company_name.age
-```
-
 ## What's managed
 
 | File | Description |
 |---|---|
 | `~/.zshrc` | Shell config — shared; zsh plugins from Homebrew (macOS) or git clone (Linux) |
 | `~/.config/starship.toml` | Starship prompt config (shared by both platforms) |
-| `~/.gitconfig` | Git config — shared push settings + Linux user/SSH |
-| `~/.gitconfigs/work.gitconfig` | Work-specific git identity + SSH key |
+| `~/.gitconfig` | Git config — shared push settings |
 | `~/.config/tmux/tmux.conf` | tmux — Ctrl+a prefix, catppuccin, session persistence |
 | `~/.config/nvim/` | Neovim / LazyVim config |
 | `~/.config/ghostty/config` | Ghostty — Nerd Font family (needed for starship's glyphs) |
@@ -71,10 +48,9 @@ corresponding file into `$HOME`.
 - `run_once_01`: installs packages (`brew bundle` on macOS, `apt` + manual on Linux)
 - `run_once_02`: clones zsh plugins to `~/.local/share/zsh/plugins` (Linux only — macOS gets them from Homebrew)
 - `run_once_03`: installs TPM + tmux plugins
-- `run_once_04`: _(removed — use `scripts/setup-work.sh` instead)_
 
-`Brewfile`, `README.md` and `scripts/` are listed in `.chezmoiignore` — they are
-repo-only and are never copied into `$HOME`.
+`Brewfile` and `README.md` are listed in `.chezmoiignore` — they are repo-only
+and are never copied into `$HOME`.
 
 > `run_once_` scripts execute **once ever** per machine (chezmoi tracks by content hash).  
 > They re-run only if the script content changes — all scripts are idempotent.
@@ -92,8 +68,3 @@ chezmoi managed                 # list all managed files
 chezmoi edit ~/.zshrc           # edit source file and apply
 chezmoi update                  # pull latest from git + apply
 ```
-
-## Changing companies
-
-Edit `~/.config/chezmoi/chezmoi.toml` and update `company`, `workEmail`, `sshKey`.  
-Then encrypt your new SSH key and upload it to OneDrive under `dotfiles-secrets/`.

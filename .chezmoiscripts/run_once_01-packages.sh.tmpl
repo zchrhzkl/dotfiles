@@ -105,7 +105,7 @@ fi
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 kubectl krew install neat 2>/dev/null || true
 
-# rclone (for OneDrive access)
+# rclone
 if ! command -v rclone &>/dev/null; then
   echo "==> Installing rclone..."
   curl https://rclone.org/install.sh | sudo bash

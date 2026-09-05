@@ -1,7 +1,6 @@
 # Repo-only files — these live in the source dir, not in $HOME
 Brewfile
 README.md
-scripts/
 
 # nvim auto-generated lockfile
 .config/nvim/lazy-lock.json
