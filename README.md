@@ -37,7 +37,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply git@github.com:zchrhzkl/dot
 After `chezmoi apply`, run the work setup script to configure git identity and SSH key:
 
 ```sh
-bash ~/.local/share/chezmoi/scripts/setup-work.sh
+bash "$(chezmoi source-path)/scripts/setup-work.sh"
 ```
 
 It will prompt for your company name, work email, and SSH key filename, then optionally fetch and decrypt your SSH key from OneDrive.
@@ -80,6 +80,10 @@ repo-only and are never copied into `$HOME`.
 > They re-run only if the script content changes — all scripts are idempotent.
 
 ## Useful chezmoi commands
+
+The source directory is recorded in `~/.config/chezmoi/chezmoi.toml` at
+`chezmoi init` time, so plain `chezmoi` commands work from anywhere —
+no `--source` flag needed. Check it with `chezmoi source-path`.
 
 ```sh
 chezmoi diff                    # preview what would change
