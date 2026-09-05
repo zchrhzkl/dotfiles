@@ -53,22 +53,28 @@ age -p ~/.ssh/id_ed25519_company_name > ~/OneDrive/dotfiles-secrets/id_ed25519_c
 
 | File | Description |
 |---|---|
-| `~/.zshrc` | Shell config — macOS (antidote + p10k) vs Linux (oh-my-zsh) |
-| `~/.zsh_plugins.txt` | antidote plugin list (macOS only) |
-| `~/.p10k.zsh` | Powerlevel10k prompt config (macOS only) |
+| `~/.zshrc` | Shell config — shared; zsh plugins from Homebrew (macOS) or git clone (Linux) |
+| `~/.config/starship.toml` | Starship prompt config (shared by both platforms) |
 | `~/.gitconfig` | Git config — shared push settings + Linux user/SSH |
 | `~/.gitconfigs/work.gitconfig` | Work-specific git identity + SSH key |
 | `~/.config/tmux/tmux.conf` | tmux — Ctrl+a prefix, catppuccin, session persistence |
 | `~/.config/nvim/` | Neovim / LazyVim config |
+| `~/.config/ghostty/config` | Ghostty — Nerd Font family (needed for starship's glyphs) |
 | `~/.config/gh/config.yml` | GitHub CLI config |
 | `~/.config/helm/repositories.yaml` | Helm repos |
 
 ## On every `chezmoi apply`
 
+Bootstrap scripts live in `.chezmoiscripts/` — chezmoi runs them and writes no
+corresponding file into `$HOME`.
+
 - `run_once_01`: installs packages (`brew bundle` on macOS, `apt` + manual on Linux)
-- `run_once_02`: installs oh-my-zsh + plugins (Linux only)
+- `run_once_02`: clones zsh plugins to `~/.local/share/zsh/plugins` (Linux only — macOS gets them from Homebrew)
 - `run_once_03`: installs TPM + tmux plugins
 - `run_once_04`: _(removed — use `scripts/setup-work.sh` instead)_
+
+`Brewfile`, `README.md` and `scripts/` are listed in `.chezmoiignore` — they are
+repo-only and are never copied into `$HOME`.
 
 > `run_once_` scripts execute **once ever** per machine (chezmoi tracks by content hash).  
 > They re-run only if the script content changes — all scripts are idempotent.

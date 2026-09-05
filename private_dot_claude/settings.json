@@ -1,5 +1,5 @@
 {
-  "model": "sonnet",
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -13,12 +13,24 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "glm-plan-usage@zai-coding-plugins": false,
+    "gopls-lsp@claude-plugins-official": true,
+    "mattpocock-skills@mattpocock": true
+  },
   "extraKnownMarketplaces": {
     "antonbabenko": {
       "source": {
         "source": "github",
         "repo": "antonbabenko/terraform-skill"
       }
+    },
+    "mattpocock": {
+      "source": {
+        "source": "github",
+        "repo": "mattpocock/skills"
+      }
     }
-  }
+  },
+  "skipAutoPermissionPrompt": true
 }

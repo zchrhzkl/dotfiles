@@ -1,0 +1,7 @@
+# Ghostty configuration
+
+# Ghostty's default is plain "JetBrains Mono", which ships the powerline branch
+# glyph (U+E0A0) but NOT the wider Nerd Font set — so the starship aws (U+E7AD)
+# and kubernetes (U+E81D) icons fall back to another font and break alignment.
+# The "Mono" (NFM) variant keeps every glyph in a single terminal cell.
+font-family = "JetBrainsMono Nerd Font Mono"

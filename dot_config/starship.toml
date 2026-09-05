@@ -1,0 +1,68 @@
+# Starship prompt — https://starship.rs/config/
+# Single config, shared by macOS and Linux.
+
+add_newline = false
+command_timeout = 1000
+
+format = """
+$directory\
+$git_branch$git_status\
+$kubernetes\
+$aws\
+$terraform\
+$cmd_duration\
+$line_break\
+$character\
+"""
+
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncate_to_repo = true
+truncation_symbol = "…/"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+[git_branch]
+symbol = " "
+style = "bold purple"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "bold yellow"
+format = "([$all_status$ahead_behind]($style) )"
+# starship's defaults for these four (U+21E1 U+21E3 U+21D5 U+2718) are NOT in
+# JetBrains Mono Nerd Font and fall back to another font, which breaks
+# monospace alignment. These replacements are all present in the font.
+ahead    = "↑"
+behind   = "↓"
+diverged = "↕"
+deleted  = "✗"
+
+# Infra context — the segments that actually matter day to day
+[kubernetes]
+disabled = false
+symbol = " "
+style = "bold cyan"
+format = '[$symbol$context( \($namespace\))]($style) '
+
+# force_display: starship hides this unless it can resolve valid credentials.
+# You use SSO + an MFA helper and have no plain ~/.aws/config, so it would
+# never show. Always display the profile — knowing the target account matters.
+[aws]
+force_display = true
+symbol = " "
+style = "bold yellow"
+format = '[$symbol$profile( \($region\))]($style) '
+
+[terraform]
+symbol = " "
+style = "bold 105"
+format = "[$symbol$workspace]($style) "
+
+[cmd_duration]
+min_time = 2000
+style = "dimmed white"
+format = "[$duration]($style) "

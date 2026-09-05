@@ -1,0 +1,36 @@
+#!/bin/bash
+# Install zsh plugins — Linux only, runs once.
+# macOS gets the same plugins from Homebrew (see Brewfile).
+{{ if eq .chezmoi.os "linux" -}}
+set -e
+
+# Mirror Homebrew's layout: <dir>/<plugin>/<plugin>.zsh, so .zshrc sources
+# both platforms with identical logic.
+PLUGIN_DIR="$HOME/.local/share/zsh/plugins"
+mkdir -p "$PLUGIN_DIR"
+
+for plugin_repo in \
+  "zsh-users/zsh-autosuggestions" \
+  "zsh-users/zsh-syntax-highlighting" \
+  "zsh-users/zsh-history-substring-search" \
+  "zsh-users/zsh-completions"; do
+  plugin_name="${plugin_repo##*/}"
+  target="$PLUGIN_DIR/$plugin_name"
+  if [ ! -d "$target" ]; then
+    echo "==> Cloning $plugin_name..."
+    git clone --depth=1 "https://github.com/$plugin_repo" "$target"
+  else
+    echo "==> $plugin_name already present, skipping."
+  fi
+done
+
+# Set zsh as default shell
+if [ "$SHELL" != "$(which zsh)" ]; then
+  echo "==> Setting zsh as default shell..."
+  chsh -s "$(which zsh)"
+fi
+
+echo "==> zsh setup complete."
+{{ else -}}
+echo "==> Skipping zsh plugin clone (macOS installs them via Homebrew)."
+{{ end -}}

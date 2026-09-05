@@ -1,8 +1,7 @@
-# macOS-only files — ignored on Linux
-{{ if ne .chezmoi.os "darwin" }}
-.zsh_plugins.txt
-.p10k.zsh
-{{ end }}
+# Repo-only files — these live in the source dir, not in $HOME
+Brewfile
+README.md
+scripts/
 
 # nvim auto-generated lockfile
 .config/nvim/lazy-lock.json
